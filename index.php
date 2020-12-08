@@ -18,7 +18,7 @@ header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="styles/screen.css" rel="stylesheet" type="text/css">
     <script type="text/javascript">
-      window.settings = <?php echo json_encode($settings); ?>;
+      window.settings = Object.freeze(<?php echo json_encode($settings); ?>);
     </script>
     <script type="text/javascript" src="scripts/app.js"></script>
   </head>

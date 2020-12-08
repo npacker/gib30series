@@ -5,8 +5,6 @@
   const IN_STOCK = 'Add to cart';
   const SOLD_OUT = 'Sold Out';
   const AUTO_NOTIFY = 'Auto Notify';
-  const WINDOW_TITLE = 'Gib 30 Series';
-  const DISCORD_WEBHOOK = settings.discord_webhook;
 
   function buildItemRow(row) {
     const itemRowTemplate = document.querySelector('#item-row').content.firstElementChild.cloneNode(true);
@@ -28,18 +26,6 @@
     return itemRowTemplate;
   }
 
-  function sendDiscordNotifications(embeds) {
-    const chunk = 10;
-
-    for (let i = 0, j = embeds.length; i < j; i += chunk) {
-      let xhr = new XMLHttpRequest();
-
-      xhr.open('POST', DISCORD_WEBHOOK);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(JSON.stringify({ embeds: embeds.slice(i, i + chunk) }));
-    }
-  }
-
   function showLastUpdatedTime() {
     const lastChecked = document.querySelector('#last-checked');
     const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
@@ -55,16 +41,17 @@
       const previous = table.querySelector('tbody');
       const current = document.createElement('tbody');
       let embeds = [];
-      let count = 0;
+      let update = false;
 
       for (let row of data) {
         let storedRow = JSON.parse(window.localStorage.getItem(row['product']));
+        let inStock = row['status'].toLowerCase() === IN_STOCK.toLowerCase();
         let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
 
-        if (row['status'].toLowerCase() === IN_STOCK.toLowerCase()) {
-          count++;
+        if (changed) {
+          update = true;
 
-          if (changed) {
+          if (inStock) {
             embeds.push({
               title: 'GPU Stock Notification',
               description: '[' + row['product'] + '](' + row['url'] + ')'
@@ -76,10 +63,12 @@
         window.localStorage.setItem(row['product'], JSON.stringify(row));
       }
 
-      table.replaceChild(current, previous);
-      document.title = (count > 0) ? WINDOW_TITLE + ' (' + count + ')' : WINDOW_TITLE;
+      if (update) {
+        discord.postMessage([settings.discord_webhook, embeds]);
+        table.replaceChild(current, previous);
+      }
+
       showLastUpdatedTime();
-      sendDiscordNotifications(embeds);
     }
   }
 
@@ -91,6 +80,8 @@
     xhr.open('GET', '/ajax.php');
     xhr.send();
   }
+
+  const discord = new Worker('scripts/discord.js');
 
   if (Notification.permission !== 'granted') {
     Notification.requestPermission();
