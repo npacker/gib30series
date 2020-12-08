@@ -5,6 +5,9 @@
   const IN_STOCK = 'Add to cart';
   const SOLD_OUT = 'Sold Out';
   const AUTO_NOTIFY = 'Auto Notify';
+  const WINDOW_TITLE = 'Gib 30 Series';
+  const FETCH_ENDPOINT = 'https://gib30series.wwu.local/ajax.php';
+  const DISCORD_WEBHOOK = 'https://discordapp.com/api/webhooks/785772587632427019/BRsi-suF7jUSrPxlDxn5XM5JFs15bR5Cy1z8mqWgyM-xuMa6T99ANekDvsKbem3YI_8U';
 
   function buildItemRow(row) {
     const itemRowTemplate = document.querySelector('#item-row').content.firstElementChild.cloneNode(true);
@@ -26,21 +29,16 @@
     return itemRowTemplate;
   }
 
-  function showNotification(row) {
-    const notification = new Notification('GPU in Stock', {
-      body: row['product'] + ' is in stock.',
-    });
+  function sendDiscordNotifications(embeds) {
+    const chunk = 10;
 
-    notification.onclick = function (event) {
-      event.preventDefault();
-      window.open(row['url'], '_blank');
-    };
-  }
+    for (let i = 0, j = embeds.length; i < j; i += chunk) {
+      let xhr = new XMLHttpRequest();
 
-  function updateWindowTitle(inStockCount) {
-    const defaultTitle = 'Gib 30 Series';
-
-    document.title = (inStockCount > 0) ? defaultTitle + ' (' + inStockCount + ')' : defaultTitle;
+      xhr.open('POST', DISCORD_WEBHOOK);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ embeds: embeds.slice(i, i + chunk) }));
+    }
   }
 
   function showLastUpdatedTime() {
@@ -55,38 +53,43 @@
     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
       const data = this.response;
       const table = document.querySelector('#item-table');
-      const tbodyOld = table.querySelector('tbody');
-      const tbodyNew = document.createElement('tbody');
-      let inStockCount = 0;
+      const previous = table.querySelector('tbody');
+      const current = document.createElement('tbody');
+      let embeds = [];
+      let count = 0;
 
       for (let row of data) {
-        const storedRow = JSON.parse(window.localStorage.getItem(row['product']));
+        let storedRow = JSON.parse(window.localStorage.getItem(row['product']));
         let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
 
         if (row['status'].toLowerCase() === IN_STOCK.toLowerCase()) {
-          inStockCount++;
+          count++;
 
           if (changed) {
-            showNotification(row);
+            embeds.push({
+              title: 'GPU Stock Notification',
+              description: '[' + row['product'] + '](' + row['url'] + ')'
+            });
           }
         }
 
-        tbodyNew.appendChild(buildItemRow(row));
+        current.appendChild(buildItemRow(row));
         window.localStorage.setItem(row['product'], JSON.stringify(row));
       }
 
-      table.replaceChild(tbodyNew, tbodyOld);
-      updateWindowTitle(inStockCount);
+      table.replaceChild(current, previous);
+      document.title = (count > 0) ? WINDOW_TITLE + ' (' + count + ')' : WINDOW_TITLE;
       showLastUpdatedTime();
+      sendDiscordNotifications(embeds);
     }
   }
 
-  function stockCheckerLoop() {
+  function mainEventLoop() {
     const xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = handleXhrResponse;
     xhr.responseType = 'json';
-    xhr.open('GET', 'https://gib30series.wwu.local/ajax.php');
+    xhr.open('GET', FETCH_ENDPOINT);
     xhr.send();
   }
 
@@ -95,6 +98,6 @@
   }
 
   window.localStorage.clear();
-  window.setInterval(stockCheckerLoop, 5000);
+  window.setInterval(mainEventLoop, 5000);
 
 })(this, this.document);
