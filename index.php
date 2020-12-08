@@ -2,9 +2,10 @@
 ini_set('display_errors', 0);
 ini_set('error_reporting', E_ALL);
 
+require 'settings.php';
 require 'fetch.php';
 
-$results = fetch();
+$results = fetch($settings['url'], $settings['cainfo']);
 
 header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
 ?>
@@ -17,6 +18,9 @@ header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet"> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="styles/screen.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+      window.settings = <?php echo json_encode($settings); ?>;
+    </script>
     <script type="text/javascript" src="scripts/app.js"></script>
   </head>
   <body>

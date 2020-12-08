@@ -1,4 +1,4 @@
-(function (window, document, undefined) {
+(function (settings, window, document, undefined) {
 
   'use strict';
 
@@ -6,8 +6,7 @@
   const SOLD_OUT = 'Sold Out';
   const AUTO_NOTIFY = 'Auto Notify';
   const WINDOW_TITLE = 'Gib 30 Series';
-  const FETCH_ENDPOINT = 'https://gib30series.wwu.local/ajax.php';
-  const DISCORD_WEBHOOK = 'https://discordapp.com/api/webhooks/785772587632427019/BRsi-suF7jUSrPxlDxn5XM5JFs15bR5Cy1z8mqWgyM-xuMa6T99ANekDvsKbem3YI_8U';
+  const DISCORD_WEBHOOK = settings.discord_webhook;
 
   function buildItemRow(row) {
     const itemRowTemplate = document.querySelector('#item-row').content.firstElementChild.cloneNode(true);
@@ -89,7 +88,7 @@
 
     xhr.onreadystatechange = handleXhrResponse;
     xhr.responseType = 'json';
-    xhr.open('GET', FETCH_ENDPOINT);
+    xhr.open('GET', '/ajax.php');
     xhr.send();
   }
 
@@ -100,4 +99,4 @@
   window.localStorage.clear();
   window.setInterval(mainEventLoop, 5000);
 
-})(this, this.document);
+})(this.settings, this, this.document);

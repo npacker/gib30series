@@ -4,8 +4,8 @@ define('IN_STOCK', 'Add to cart');
 define('SOLD_OUT', 'Sold Out');
 define('AUTO_NOTIFY', 'Auto Notify');
 
-function fetch() {
-  $handle = curl_init('https://www.newegg.com/p/pl?N=100007709%20601357250');
+function fetch($url, $cainfo) {
+  $handle = curl_init($url);
 
   curl_setopt($handle, CURLOPT_FRESH_CONNECT, TRUE);
   curl_setopt($handle, CURLOPT_FORBID_REUSE, TRUE);
@@ -13,7 +13,7 @@ function fetch() {
   curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, TRUE);
   curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 2);
-  curl_setopt($handle, CURLOPT_CAINFO, '/etc/ssl/certs/USERTrust_RSA_Certification_Authority.pem');
+  curl_setopt($handle, CURLOPT_CAINFO, $cainfo);
 
   $buffer = curl_exec($handle);
 
