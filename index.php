@@ -3,9 +3,6 @@ ini_set('display_errors', 0);
 ini_set('error_reporting', E_ALL);
 
 require 'settings.php';
-require 'fetch.php';
-
-$results = fetch($settings['url'], $settings['cainfo']);
 
 header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
 ?>
@@ -41,16 +38,6 @@ header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
       </tr>
     </thead>
     <tbody>
-    <?php foreach ($results as $result): ?>
-      <tr>
-        <td><?php echo $result['product']; ?></td>
-        <td>
-          <div class="icon-wrapper <?php echo $result['class']; ?>">
-            <i class="material-icons"><?php echo $result['icon']; ?></i><a href="<?php echo $result['url']; ?>" target="_blank"><?php echo $result['status']; ?></a>
-          </div>
-        </td>
-      </tr>
-    <?php endforeach; ?>
     </tbody>
   </table>
   <template id="item-row">

@@ -65,9 +65,9 @@
 
       if (update) {
         discord.postMessage([settings.discord_webhook, embeds]);
-        table.replaceChild(current, previous);
       }
 
+      table.replaceChild(current, previous);
       showLastUpdatedTime();
     }
   }
@@ -87,7 +87,8 @@
     Notification.requestPermission();
   }
 
-  window.localStorage.clear();
   window.setInterval(mainEventLoop, 5000);
+
+  mainEventLoop();
 
 })(this.settings, this, this.document);
