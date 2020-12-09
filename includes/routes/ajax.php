@@ -1,8 +1,8 @@
 <?php
 
-require 'fetch.php';
-
-$results = fetch($settings['url'], $settings['cainfo']);
+$request = new CurlRequest($settings['cainfo']);
+$method = new NeweggItems($settings['url'], $request);
+$results = $method->fetch();
 $json = json_encode($results);
 
 header('Content-Type: application/json');
