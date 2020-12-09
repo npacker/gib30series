@@ -18,16 +18,21 @@ class NeweggProduct implements Parser {
     $button = $xpath->query(".//*[contains(@class, 'btn')]", $buy)->item(0);
     $product = trim($title->textContent);
     $status = trim($button->textContent);
-    $icon = Status::IN_STOCK_ICON;
-    $class = Status::IN_STOCK_CLASS;
 
     if (strtolower($status) === strtolower(NeweggStatus::SOLD_OUT)) {
+      $status = Status::SOLD_OUT;
       $icon = Status::SOLD_OUT_ICON;
       $class = Status::SOLD_OUT_CLASS;
     }
     elseif (strtolower($status) === strtolower(NeweggStatus::AUTO_NOTIFY)) {
+      $status = Status::AUTO_NOTIFY;
       $icon = Status::AUTO_NOTIFY_ICON;
       $class = Status::AUTO_NOTIFY_CLASS;
+    }
+    else {
+      $status = Status::IN_STOCK;
+      $icon = Status::IN_STOCK_ICON;
+      $class = Status::IN_STOCK_CLASS;
     }
 
     $id = hash('sha1', self::class . $this->url);

@@ -23,5 +23,6 @@ switch ($route) {
 
 }
 
+header('Cache-Control: no-store, max-age=0');
 ob_end_flush();
 exit();

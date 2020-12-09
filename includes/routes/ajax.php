@@ -15,6 +15,5 @@ $results = $multi->execute();
 $json = json_encode($results);
 
 header('Content-Type: application/json');
-header('Cache-Control: no-store, max-age=0');
 
 echo $json;
