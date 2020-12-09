@@ -9,6 +9,10 @@ class CurlOptions {
   }
 
   public function apply($handle) {
+    curl_setopt($handle, CURLOPT_HTTPHEADER, [
+      'Cache-Control: no-store',
+      'Pragma: no-cache',
+    ]);
     curl_setopt($handle, CURLOPT_FRESH_CONNECT, TRUE);
     curl_setopt($handle, CURLOPT_FORBID_REUSE, TRUE);
     curl_setopt($handle, CURLOPT_ENCODING, '');

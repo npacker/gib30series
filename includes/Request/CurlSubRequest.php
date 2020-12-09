@@ -13,6 +13,10 @@ class CurlSubRequest {
     $options->apply($this->handle);
   }
 
+  public function __destruct() {
+    curl_close($this->handle);
+  }
+
   public function handle() {
     return $this->handle;
   }

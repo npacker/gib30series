@@ -3,7 +3,9 @@
 $options = new CurlOptions($settings['cainfo']);
 $requests = [];
 
-foreach ($settings['urls'] as $type => $url) {
+foreach ($settings['endpoints'] as $endpoint) {
+  $url = $endpoint['url'];
+  $type = $endpoint['type'];
   $parser = new $type($url);
   $requests[] = new CurlSubRequest($url, $options, $parser);
 }
@@ -13,6 +15,6 @@ $results = $multi->execute();
 $json = json_encode($results);
 
 header('Content-Type: application/json');
-header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
+header('Cache-Control: no-store, max-age=0');
 
 echo $json;

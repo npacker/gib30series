@@ -2,16 +2,16 @@
 
 class CurlMultiRequest {
 
-  private $multi;
+  private $handle;
 
   private $requests;
 
   public function __construct(CurlSubRequest ...$requests) {
-    $this->multi = curl_multi_init();
+    $this->handle = curl_multi_init();
     $this->requests = $requests;
 
     foreach ($this->requests as $request) {
-      curl_multi_add_handle($this->multi, $request->handle());
+      curl_multi_add_handle($this->handle, $request->handle());
     }
   }
 
@@ -23,10 +23,10 @@ class CurlMultiRequest {
     $results = [];
 
     do {
-      $status = curl_multi_exec($this->multi, $running);
+      $status = curl_multi_exec($this->handle, $running);
 
       if ($running) {
-        curl_multi_select($this->multi);
+        curl_multi_select($this->handle);
       }
     } while ($running && $status === CURLM_OK);
 
@@ -35,7 +35,7 @@ class CurlMultiRequest {
       $result = $request->parse($buffer);
       $results = array_merge($results, $result);
 
-      curl_multi_remove_handle($this->multi, $request->handle());
+      curl_multi_remove_handle($this->handle, $request->handle());
     }
 
     return $results;

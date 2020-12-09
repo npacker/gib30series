@@ -2,10 +2,6 @@
 
   'use strict';
 
-  const IN_STOCK = 'Add to cart';
-  const SOLD_OUT = 'Sold Out';
-  const AUTO_NOTIFY = 'Auto Notify';
-
   function buildItemRow(row) {
     const itemRowTemplate = document.querySelector('#item-row').content.firstElementChild.cloneNode(true);
     const iconWrapperTemplate = document.querySelector('#icon-wrapper').content.firstElementChild.cloneNode(true);
@@ -44,8 +40,8 @@
       let update = false;
 
       for (let row of data) {
-        let storedRow = JSON.parse(window.localStorage.getItem(row['product']));
-        let inStock = row['status'].toLowerCase() === IN_STOCK.toLowerCase();
+        let storedRow = JSON.parse(window.localStorage.getItem(row['id']));
+        let inStock = row['status'].toLowerCase() === settings.Status.IN_STOCK.toLowerCase();
         let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
 
         if (changed) {
@@ -60,7 +56,7 @@
         }
 
         current.appendChild(buildItemRow(row));
-        window.localStorage.setItem(row['product'], JSON.stringify(row));
+        window.localStorage.setItem(row['id'], JSON.stringify(row));
       }
 
       if (update) {
@@ -87,7 +83,7 @@
     Notification.requestPermission();
   }
 
-  window.setInterval(mainEventLoop, 5000);
+  window.setInterval(mainEventLoop, 1000);
 
   mainEventLoop();
 

@@ -30,7 +30,8 @@ class NeweggProduct implements Parser {
       $class = Status::AUTO_NOTIFY_CLASS;
     }
 
-    $result = new Result($product, $status, $icon, $class, $this->url);
+    $id = hash('md5', self::class . $this->url);
+    $result = new Result($id, $product, $status, $icon, $class, $this->url);
 
     return [$result];
   }
