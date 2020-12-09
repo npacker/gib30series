@@ -39,7 +39,7 @@ class NeweggItems implements Parser {
         $class = Status::IN_STOCK_CLASS;
       }
 
-      $id = hash('sha1', self::class . $url);
+      $id = new Id(slef::class . $url);
       $results[] = new Result($id, $product, $status, $icon, $class, $url);
     }
 

@@ -35,7 +35,7 @@ class NeweggProduct implements Parser {
       $class = Status::IN_STOCK_CLASS;
     }
 
-    $id = hash('sha1', self::class . $this->url);
+    $id = new Id(self::class . $this->url);
     $result = new Result($id, $product, $status, $icon, $class, $this->url);
 
     return [$result];
