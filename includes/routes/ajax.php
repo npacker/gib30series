@@ -1,15 +1,15 @@
 <?php
 
 $options = new CurlOptions($settings['cainfo']);
-$request = new CurlRequest($options);
-$results = [];
+$requests = [];
 
 foreach ($settings['urls'] as $type => $url) {
-  $method = new $type($url, $request);
-
-  $results = array_merge($results, $method->fetch());
+  $parser = new $type($url);
+  $requests[] = new CurlSubRequest($url, $options, $parser);
 }
 
+$multi = new CurlMultiRequest(...$requests);
+$results = $multi->execute();
 $json = json_encode($results);
 
 header('Content-Type: application/json');

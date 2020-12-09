@@ -2,10 +2,16 @@
 
 interface Status {
 
-  public function label(): string;
+  const IN_STOCK_CLASS = 'in-stock';
 
-  public function icon(): string;
+  const IN_STOCK_ICON = 'check_circle';
 
-  public function class(): string;
+  const SOLD_OUT_CLASS = 'sold-out';
+
+  const SOLD_OUT_ICON = 'cancel';
+
+  const AUTO_NOTIFY_CLASS = 'notify';
+
+  const AUTO_NOTIFY_ICON = 'info';
 
 }

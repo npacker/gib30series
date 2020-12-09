@@ -1,20 +1,11 @@
 <?php
 
-class NeweggItems {
+class NeweggItems implements Parser {
 
   private $url;
 
-  private $request;
-
-  public function __construct(string $url, CurlRequest $request) {
+  public function __construct(string $url) {
     $this->url = $url;
-    $this->request = $request;
-  }
-
-  public function fetch(): array {
-    $buffer = $this->request->send($this->url);
-
-    return $this->parse($buffer);
   }
 
   public function parse(string $buffer) {
@@ -31,25 +22,19 @@ class NeweggItems {
       $product = trim($title->textContent);
       $status = trim($button->textContent);
       $url = trim($title->getAttribute('href'));
-      $icon = 'check_circle';
-      $class = 'in-stock';
+      $icon = Status::IN_STOCK_ICON;
+      $class = Status::IN_STOCK_CLASS;
 
       if (strtolower($status) === strtolower(NeweggStatus::SOLD_OUT)) {
-        $icon = 'cancel';
-        $class = 'sold-out';
+        $icon = Status::SOLD_OUT_ICON;
+        $class = Status::SOLD_OUT_CLASS;
       }
       elseif (strtolower($status) === strtolower(NeweggStatus::AUTO_NOTIFY)) {
-        $icon = 'info';
-        $class = 'notify';
+        $icon = Status::AUTO_NOTIFY_ICON;
+        $class = Status::AUTO_NOTIFY_CLASS;
       }
 
-      $results[] = [
-        'product' => $product,
-        'status' => $status,
-        'icon' => $icon,
-        'class' => $class,
-        'url' => $url,
-      ];
+      $results[] = new Result($product, $status, $icon, $class, $url);
     }
 
     return $results;

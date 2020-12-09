@@ -6,8 +6,9 @@ class CurlSubRequest {
 
   private $parser;
 
-  public function __construct(CurlOptions $options, Parser $parser) {
-    $this->handle = curl_init();
+  public function __construct(string $url, CurlOptions $options, Parser $parser) {
+    $this->handle = curl_init($url);
+    $this->parser = $parser;
 
     $options->apply($this->handle);
   }
