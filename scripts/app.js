@@ -31,40 +31,44 @@
   }
 
   function handleXhrResponse() {
-    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-      const data = this.response;
-      const table = document.querySelector('#item-table');
-      const previous = table.querySelector('tbody');
-      const current = document.createElement('tbody');
-      let embeds = [];
-      let update = false;
+    if (this.readyState === XMLHttpRequest.DONE) {
+      if (this.status === 200) {
+        const data = this.response;
+        const table = document.querySelector('#item-table');
+        const previous = table.querySelector('tbody');
+        const current = document.createElement('tbody');
+        let embeds = [];
+        let update = false;
 
-      for (let row of data) {
-        let storedRow = JSON.parse(window.localStorage.getItem(row['id']));
-        let inStock = row['status'].toLowerCase() === settings.Status.IN_STOCK.toLowerCase();
-        let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
+        for (let row of data) {
+          let storedRow = JSON.parse(window.localStorage.getItem(row['id']));
+          let inStock = row['status'].toLowerCase() === settings.status.IN_STOCK.toLowerCase();
+          let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
 
-        if (changed) {
-          update = true;
+          if (changed) {
+            update = true;
 
-          if (inStock) {
-            embeds.push({
-              title: 'GPU Stock Notification',
-              description: '[' + row['product'] + '](' + row['url'] + ')'
-            });
+            if (inStock) {
+              embeds.push({
+                title: 'GPU Stock Notification',
+                description: '[' + row['product'] + '](' + row['url'] + ')'
+              });
+            }
           }
+
+          current.appendChild(buildItemRow(row));
+          window.localStorage.setItem(row['id'], JSON.stringify(row));
         }
 
-        current.appendChild(buildItemRow(row));
-        window.localStorage.setItem(row['id'], JSON.stringify(row));
+        if (update) {
+          discord.postMessage([settings.discord_webhook, embeds]);
+        }
+
+        table.replaceChild(current, previous);
+        showLastUpdatedTime();
       }
 
-      if (update) {
-        discord.postMessage([settings.discord_webhook, embeds]);
-      }
-
-      table.replaceChild(current, previous);
-      showLastUpdatedTime();
+      window.setTimeout(mainEventLoop, settings.timeout);
     }
   }
 
@@ -82,8 +86,6 @@
   if (Notification.permission !== 'granted') {
     Notification.requestPermission();
   }
-
-  window.setInterval(mainEventLoop, 1000);
 
   mainEventLoop();
 

@@ -34,7 +34,7 @@ class NeweggItems implements Parser {
         $class = Status::AUTO_NOTIFY_CLASS;
       }
 
-      $id = hash('md5', self::class . $url);
+      $id = hash('sha1', self::class . $url);
       $results[] = new Result($id, $product, $status, $icon, $class, $url);
     }
 
