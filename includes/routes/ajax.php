@@ -1,8 +1,15 @@
 <?php
 
-$request = new CurlRequest($settings['cainfo']);
-$method = new NeweggItems($settings['url'], $request);
-$results = $method->fetch();
+$options = new CurlOptions($settings['cainfo']);
+$request = new CurlRequest($options);
+$results = [];
+
+foreach ($settings['urls'] as $type => $url) {
+  $method = new $type($url, $request);
+
+  $results = array_merge($results, $method->fetch());
+}
+
 $json = json_encode($results);
 
 header('Content-Type: application/json');

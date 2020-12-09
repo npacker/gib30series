@@ -4,21 +4,18 @@ class CurlRequest {
 
   private $handle;
 
-  public function __construct(string $cainfo) {
+  public function __construct(CurlOptions $options) {
     $this->handle = curl_init();
 
-    curl_setopt($this->handle, CURLOPT_FRESH_CONNECT, TRUE);
-    curl_setopt($this->handle, CURLOPT_FORBID_REUSE, TRUE);
-    curl_setopt($this->handle, CURLOPT_ENCODING, '');
-    curl_setopt($this->handle, CURLOPT_HEADER, FALSE);
-    curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($this->handle, CURLOPT_SSL_VERIFYPEER, TRUE);
-    curl_setopt($this->handle, CURLOPT_SSL_VERIFYHOST, 2);
-    curl_setopt($this->handle, CURLOPT_CAINFO, $cainfo);
+    $options->apply($this->handle);
   }
 
   public function __destruct() {
     curl_close($this->handle);
+  }
+
+  public function handle() {
+    return $this->handle;
   }
 
   public function send(string $url): string {

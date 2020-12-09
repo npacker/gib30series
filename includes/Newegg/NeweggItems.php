@@ -13,6 +13,11 @@ class NeweggItems {
 
   public function fetch(): array {
     $buffer = $this->request->send($this->url);
+
+    return $this->parse($buffer);
+  }
+
+  public function parse(string $buffer) {
     $dom = new DomDocument();
     $dom->loadHTML($buffer);
     $xpath = new DomXPath($dom);

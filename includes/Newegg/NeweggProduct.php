@@ -13,13 +13,22 @@ class NeweggProduct {
 
   public function fetch(): array {
     $buffer = $this->request->send($this->url);
+
+    return $this->parse($buffer);
+  }
+
+  public function parse(string $buffer) {
     $dom = new DomDocument();
     $dom->loadHTML($buffer);
     $xpath = new DomXPath($dom);
-    $item = $xpath->query("//div[contians(@class, 'product-main')]")->item(0);
+    $item = $xpath->query("//div[contains(@class, 'product-main')]")->item(0);
     $title = $xpath->query(".//h1[@class='product-title']", $item)->item(0);
     $buy = $xpath->query("//div[@id='ProductBuy']")->item(0);
-    $status = $xpath->query(".//*[contains(@class, 'btn')]", $buy)->item(0);
+    $button = $xpath->query(".//*[contains(@class, 'btn')]", $buy)->item(0);
+    $product = trim($title->textContent);
+    $status = trim($button->textContent);
+    $icon = 'check_circle';
+    $class = 'in-stock';
 
     if (strtolower($status) === strtolower(NeweggStatus::SOLD_OUT)) {
       $icon = 'cancel';
@@ -30,13 +39,15 @@ class NeweggProduct {
       $class = 'notify';
     }
 
-    return [
-      'title' => $title,
+    $result = [
+      'product' => $product,
       'status' => $status,
       'icon' => $icon,
       'class' => $class,
       'url' => $this->url,
     ];
+
+    return [$result];
   }
 
 }
