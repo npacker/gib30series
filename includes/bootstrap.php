@@ -67,7 +67,7 @@ function class_autoloader($class) {
 
     if (file_exists($file_path)) {
       $classes[$class] = $file_path;
-      require_once $file_path;
+      require $file_path;
       break;
     }
   }
@@ -95,7 +95,9 @@ function fatal_error_handler() {
  * Throw all errors as exceptions.
  */
 function error_handler($errno, $errstr, $errfile, $errline) {
-  throw new ErrorException(sprintf('%s in %s on line %d', $errstr, $errfile, $errline), 0, $errno, $errfile, $errline);
+  if ($errno === E_ERROR) {
+    throw new ErrorException(sprintf('%s in %s on line %d', $errstr, $errfile, $errline), 0, $errno, $errfile, $errline);
+  }
 }
 
 /**
@@ -124,4 +126,8 @@ function bootstrap() {
   set_include_path(ROOT);
 
   spl_autoload_register('class_autoloader');
+
+  global $settings;
+
+  require 'settings.php';
 }

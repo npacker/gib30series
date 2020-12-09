@@ -77,7 +77,7 @@
 
     xhr.onreadystatechange = handleXhrResponse;
     xhr.responseType = 'json';
-    xhr.open('GET', '/ajax.php');
+    xhr.open('GET', '/ajax');
     xhr.send();
   }
 
