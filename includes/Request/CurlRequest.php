@@ -2,30 +2,24 @@
 
 class CurlRequest {
 
-  private $handle;
+  private $options;
 
   public function __construct(CurlOptions $options) {
-    $this->handle = curl_init();
-
-    $options->apply($this->handle);
-  }
-
-  public function __destruct() {
-    curl_close($this->handle);
-  }
-
-  public function handle() {
-    return $this->handle;
+    $this->options = $options;
   }
 
   public function send(string $url): string {
-    curl_setopt($this->handle, CURLOPT_URL, $url);
+    $handle = curl_init($url);
 
-    $buffer = curl_exec($this->handle);
+    $this->options->apply($handle);
+
+    $buffer = curl_exec($handle);
 
     if ($buffer === false) {
-      throw new Exception(curl_error($this->handle));
+      throw new Exception(curl_error($handle));
     }
+
+    curl_close($handle);
 
     return $buffer;
   }

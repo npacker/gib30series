@@ -9,14 +9,14 @@
     const itemLinkTemplate = document.querySelector('#item-link').content.firstElementChild.cloneNode(true);
     const td = itemRowTemplate.querySelectorAll('td');
 
-    itemIconTemplate.textContent = row['icon'];
-    itemLinkTemplate.textContent = row['status'];
-    itemLinkTemplate.setAttribute('href', row['url']);
-    iconWrapperTemplate.classList.add(row['class']);
+    itemIconTemplate.textContent = row.icon;
+    itemLinkTemplate.textContent = row.status;
+    itemLinkTemplate.setAttribute('href', row.url);
+    iconWrapperTemplate.classList.add(row.class);
     iconWrapperTemplate.appendChild(itemIconTemplate);
     iconWrapperTemplate.appendChild(itemLinkTemplate);
 
-    td[0].textContent = row['product'];
+    td[0].textContent = row.product;
     td[1].appendChild(iconWrapperTemplate);
 
     return itemRowTemplate;
@@ -41,9 +41,9 @@
         let update = false;
 
         for (let row of data) {
-          let storedRow = JSON.parse(window.localStorage.getItem(row['id']));
-          let inStock = row['status'].toLowerCase() === settings.status.IN_STOCK.toLowerCase();
-          let changed = (storedRow === null) || (storedRow['status'] !== row['status']);
+          let storedRow = JSON.parse(window.localStorage.getItem(row.id));
+          let inStock = row.status.toLowerCase() === settings.status.IN_STOCK.toLowerCase();
+          let changed = (storedRow === null) || (storedRow.status !== row.status);
 
           if (changed) {
             update = true;
@@ -51,13 +51,13 @@
             if (inStock) {
               embeds.push({
                 title: 'GPU Stock Notification',
-                description: '[' + row['product'] + '](' + row['url'] + ')'
+                description: '[' + row.product + '](' + row.url + ')'
               });
             }
           }
 
           current.appendChild(buildItemRow(row));
-          window.localStorage.setItem(row['id'], JSON.stringify(row));
+          window.localStorage.setItem(row.id, JSON.stringify(row));
         }
 
         if (update) {

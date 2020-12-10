@@ -10,6 +10,9 @@ class CurlMultiRequest {
     $this->handle = curl_multi_init();
     $this->requests = $requests;
 
+    curl_multi_setopt($this->handle, CURLMOPT_PIPELINING, 0);
+    curl_multi_setopt($this->handle, CURLMOPT_MAX_HOST_CONNECTIONS, 1);
+
     foreach ($this->requests as $request) {
       curl_multi_add_handle($this->handle, $request->handle());
     }
